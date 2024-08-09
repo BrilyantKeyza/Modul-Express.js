@@ -17,49 +17,61 @@ JWT (JSON Web Token) adalah standar yang digunakan untuk membuat token yang dapa
         npm install jsonwebtoken
         ```
         
-2.  **Membuat Token JWT saat Login:**
+
+2.  **Buat JWT saat Login:**
     
-    -   Saat user berhasil login, buat token JWT dan kirimkan ke client:
+    -   Setelah pengguna berhasil login, buat JWT yang berisi informasi tentang pengguna.
+    -   Letak kode: Di dalam rute login di file `routes/auth.js`.
     
-    **Contoh Membuat JWT:**
+        ```
+        const token = jwt.sign({ id: user.id, email: user.email }, secretKey, { expiresIn: '1h' });
+        ```
     
-    ```
-    const token = jwt.sign({ id: user.id }, 'secret_key', { expiresIn: '1h' });
-    ```
+3.   **Middleware untuk Verifikasi JWT:**
     
-3.  **Menggunakan JWT untuk Melindungi Rute:**
-    
-    -   Buat middleware untuk memverifikasi token pada rute yang memerlukan autentikasi:
-    
-    **Contoh Middleware JWT:**
-    
-    ```
-    const authenticateJWT = (req, res, next) => {
-      const token = req.header('Authorization').split(' ')[1];
-    
-      if (!token) {
-        return res.status(403).json({ error: 'Token tidak tersedia' });
+      -   Buat middleware yang memverifikasi token JWT pada setiap rute yang memerlukan otentikasi.
+      -   Letak kode: Buat file baru `middleware/auth.js`.
+      
+
+      ```
+      // middleware/auth.js
+      const jwt = require('jsonwebtoken');
+      const secretKey = 'your_secret_key'; // Ganti dengan kunci rahasia kamu
+      
+      function authenticateToken(req, res, next) {
+          const token = req.header('Authorization').split(' ')[1];
+          
+          if (!token) return res.status(401).json({ message: 'Akses ditolak' });
+      
+          try {
+              const verified = jwt.verify(token, secretKey);
+              req.user = verified;
+              next();
+          } catch (error) {
+              res.status(400).json({ message: 'Token tidak valid' });
+          }
       }
+      
+      module.exports = authenticateToken;
+      ```
     
-      jwt.verify(token, 'secret_key', (err, user) => {
-        if (err) {
-          return res.status(403).json({ error: 'Token tidak valid' });
-        }
-        req.user = user;
-        next();
-      });
-    };
-    ```
+4.    **Gunakan Middleware di Rute Terproteksi:**
     
-    -   Terapkan middleware ini pada rute yang ingin dilindungi:
-    
-    **Contoh Penerapan Middleware:**
-    
-    ```
-    app.get('/protected', authenticateJWT, (req, res) => {
-      res.json({ message: 'Ini adalah data rahasia.' });
-    });
-    ```
+      -   Terapkan middleware ini pada rute yang ingin dilindungi agar hanya pengguna yang terotentikasi yang dapat mengakses.
+      -   Letak kode: Di dalam file `routes/protected.js`.
+        
+        ```
+        // routes/protected.js
+        const express = require('express');
+        const authenticateToken = require('../middleware/auth');
+        const router = express.Router();
+        
+        router.get('/protected', authenticateToken, (req, res) => {
+            res.json({ message: 'Ini adalah rute terproteksi', user: req.user });
+        });
+        
+        module.exports = router;
+        ```
     
 
 ### Kesimpulan

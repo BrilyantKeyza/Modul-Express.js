@@ -17,23 +17,25 @@ bcrypt adalah library yang digunakan untuk melakukan hashing pada password sebel
         npm install bcrypt
         ```
         
-2.  **Menggunakan bcrypt untuk Hashing:**
-    
-    -   Hash password saat user mendaftar:
-    
-    **Contoh Hashing Password:**
 
-    ```
-    const hashedPassword = await bcrypt.hash(password, 10);
-    ``` 
+2.    **Hashing Password:**
     
-    -   Saat login, gunakan bcrypt untuk membandingkan password yang diinput dengan hash yang tersimpan:
+        -   Gunakan bcrypt untuk meng-hash password.
+        -   Letak kode: Di dalam rute registrasi di file `routes/auth.js` .
+        
+        
+            ```
+            const hashedPassword = await bcrypt.hash(password, 10);
+            ```
     
-    **Contoh Verifikasi Password:**
+3.   **Verifikasi Password:**
     
-    ```
-    const validPassword = await bcrypt.compare(password, user.password);
-    ```
+        -   Gunakan bcrypt untuk membandingkan password yang di-hash dengan input user saat login.
+        -   Letak kode: Di dalam rute login di file `routes/auth.js`.
+        
+            ```
+            const isMatch = await bcrypt.compare(password, user.password);
+            ```
     
 
 ### Kesimpulan

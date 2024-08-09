@@ -31,6 +31,19 @@ sidebar_position: 1
         |-- /routes
         |-- /views
         |-- app.js`
+
+
+    -   Membuat Folder Satu per Satu 
+        Jalankan perintah berikut satu per satu untuk membuat setiap folder:
+        ```
+        mkdir controllers
+        mkdir models
+        mkdir routes
+        mkdir views
+        ```
+        ```
+        touch app.js
+        ```
         
 2.  **Membuat Model Mahasiswa:**
     

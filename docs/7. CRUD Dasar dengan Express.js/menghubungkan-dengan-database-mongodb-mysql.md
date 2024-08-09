@@ -97,10 +97,87 @@ Untuk menyimpan data secara permanen, kamu perlu menghubungkan aplikasi dengan d
           }
         });
         ``` 
+        **Penjelasan:**
         
-4.  **Mengubah Operasi CRUD untuk MySQL:**
+        -   `Item` adalah model yang akan digunakan untuk berinteraksi dengan tabel `Items` di MySQL.
+        -   `name` dan `price` adalah kolom dalam tabel.
+4.   **Mengubah Operasi CRUD untuk MySQL:**
     
-    -   Sesuaikan operasi CRUD sebelumnya untuk bekerja dengan MySQL menggunakan Sequelize.
+      -   **Contoh Operasi Create:**
+          
+
+          ```
+          app.post('/items', async (req, res) => {
+            try {
+              const item = await Item.create(req.body);
+              res.status(201).json(item);
+            } catch (error) {
+              res.status(400).send(error);
+            }
+          });
+          ``` 
+          
+      -   **Contoh Operasi Read:**
+          
+          ```
+          app.get('/items', async (req, res) => {
+            try {
+              const items = await Item.findAll();
+              res.json(items);
+            } catch (error) {
+              res.status(500).send(error);
+            }
+          });
+          ``` 
+          
+      -   **Contoh Operasi Update:**
+          
+  
+          ```
+          app.put('/items/:id', async (req, res) => {
+            try {
+              const [updated] = await Item.update(req.body, {
+                where: { id: req.params.id }
+              });
+              if (updated) {
+                const updatedItem = await Item.findByPk(req.params.id);
+                res.json(updatedItem);
+              } else {
+                res.status(404).send('Item tidak ditemukan');
+              }
+            } catch (error) {
+              res.status(400).send(error);
+            }
+          });
+          ```
+          
+      -   **Contoh Operasi Delete:**
+          
+          ```
+          app.delete('/items/:id', async (req, res) => {
+            try {
+              const deleted = await Item.destroy({
+                where: { id: req.params.id }
+              });
+              if (deleted) {
+                res.status(204).send();
+              } else {
+                res.status(404).send('Item tidak ditemukan');
+              }
+            } catch (error) {
+              res.status(500).send(error);
+            }
+          });
+          ```
+  5. **Menjalankan Aplikasi**
+
+      Jalankan perintah berikut di terminal untuk memulai aplikasi:
+
+      ```
+      node app.js
+      ```
+
+      Buka browser dan akses `http://localhost:3000` untuk melihat aplikasi berjalan.
 
 ### Kesimpulan
 Dengan menghubungkan aplikasi Express.js ke database seperti MongoDB atau MySQL, kamu bisa menyimpan dan mengelola data secara permanen. Ini memungkinkan pengembangan aplikasi yang lebih kompleks dan dinamis.
